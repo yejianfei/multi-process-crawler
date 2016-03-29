@@ -12,27 +12,23 @@ from requests import codes
 from crawler import weibo_cn
 from config import SERVER
 
+app = Flask(__name__)
 
-def do_task(task, msg):
+
+def do_task(msg):
     """
     新进程的处理回调函数,用于根据任务类型选择对于的数据抓取实现函数.
-    :param task: 任务名称,用于抓取过程中对实时状态进行返回时使用
     :param msg: 待抓取数据的相关参数
     :return:
     """
     # 处理weibo.cn的抓取任务
     if msg["type"] == "weibo_cn":
-        weibo_cn.fetch(msg["keyword"], int(msg["start"]), int(msg["end"]))
+        weibo_cn.fetch(msg["task"], msg["keyword"], int(msg["start"]), int(msg["end"]))
 
-    """
-    # 通知服务应用服务程序,该抓取任务已完成,请求地址示例:http://127.0.0.1:9000/task/<task_id>
-    put("%s/tasks/%s" % (SERVER["URL"], msg["id"]), {
+    # 通知服务应用服务程序,该抓取任务已完成,请求地址示例:http://127.0.0.1:9000/api/task/<task_id>
+    put("%s/api/tasks/%s" % (SERVER["URL"], msg["task"]), json={
         "action": "done"
     })
-    """
-
-
-app = Flask(__name__)
 
 
 @app.route("/tasks", methods=["post"])
@@ -44,7 +40,7 @@ def task():
     payload = request.get_json()
 
     # 开启新进程处理任务并抓取数据.
-    proc = Process(target=do_task, args=(app.config["TASK_NODE"], payload,))
+    proc = Process(target=do_task, args=(payload,))
     proc.start()
 
     # 直接返回处理结果为成功,达到异步的效果
@@ -53,11 +49,13 @@ def task():
     })
 
 
+
+
 if __name__ == "__main__":
     node = gethostname()
 
     # 通知应用服务程序该节点已上线
-    resp = post("%s/nodes" % SERVER["URL"], json={
+    resp = post("%s/api/nodes" % SERVER["URL"], json={
         "name": node,
         "addr": gethostbyname(node),
         "port": 9001
