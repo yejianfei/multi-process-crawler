@@ -9,10 +9,3 @@ MONGO = {
     "PORT": "27017",
     "DB": "crawler_db"
 }
-
-REDIS = {
-    "host": "127.0.0.1",
-    "port": 6379,
-    "password": "master",
-    "db": 1
-}

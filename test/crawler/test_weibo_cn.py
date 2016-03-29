@@ -3,4 +3,4 @@ from crawler import weibo_cn
 
 
 def test_fetch():
-    weibo_cn.fetch("李沁", 3, 6)
+    weibo_cn.fetch("test_task", "李沁", 3, 6)

@@ -10,6 +10,7 @@ from requests import post
 from requests import put
 from requests import codes
 from crawler import weibo_cn
+from crawler import medium_com
 from config import SERVER
 
 app = Flask(__name__)
@@ -24,6 +25,8 @@ def do_task(msg):
     # 处理weibo.cn的抓取任务
     if msg["type"] == "weibo_cn":
         weibo_cn.fetch(msg["task"], msg["keyword"], int(msg["start"]), int(msg["end"]))
+    elif msg["type"] == "medium_com":
+        medium_com.fetch(msg["task"], msg["keyword"], int(msg["start"]), int(msg["end"]))
 
     # 通知服务应用服务程序,该抓取任务已完成,请求地址示例:http://127.0.0.1:9000/api/task/<task_id>
     put("%s/api/tasks/%s" % (SERVER["URL"], msg["task"]), json={

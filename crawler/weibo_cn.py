@@ -4,7 +4,6 @@ from requests import codes
 from time import strftime
 from time import sleep
 from time import localtime
-
 from crawler import insert_collection
 
 
