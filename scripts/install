@@ -1,13 +1,24 @@
 #! /bin/bash
 
-# check sudo command and install
-if ! command -v sudo > /dev/null 2&1>1; then
-    apt-get install sudo -y
+
+# ubuntu server
+if [ -f /etc/debian_version ]; then
+
+    # check sudo command and install
+    if ! command -v sudo > /dev/null 2&1>1; then
+        apt-get install sudo -y
+    fi
+
+    # install deps command
+    sudo apt-get update
+    sudo apt-get install -y python wget git
 fi
 
-# install deps command
-sudo apt-get update
-sudo apt-get install -y python wget git
+# mac osx
+if [ "$(uname)" == "Darwin" ]; then
+    /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
+    brew install wget
+fi
 
 # check pip command and install
 if ! command -v pip > /dev/null 2&>1; then
@@ -29,8 +40,8 @@ fi
 git clone https://github.com/yejianfei/multi-process-crawler.git
 
 # install deps
-virtualenv multi-process-crawler
-source multi-process-crawler/bin/activate
+virtualenv multi-process-crawler/env
+source multi-process-crawler/env/bin/activate
 pip install -r multi-process-crawler/requirements.txt
 
 # exit virtualenv env
