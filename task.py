@@ -12,6 +12,7 @@ from requests import codes
 from crawler import weibo_cn
 from crawler import medium_com
 from config import SERVER
+from config import NODE
 
 app = Flask(__name__)
 
@@ -52,15 +53,12 @@ def task():
     })
 
 
-
-
 if __name__ == "__main__":
     node = gethostname()
 
     # 通知应用服务程序该节点已上线
     resp = post("%s/api/nodes" % SERVER["URL"], json={
         "name": node,
-        "addr": gethostbyname(node),
         "port": 9001
     })
     if resp.status_code == codes.ok:
@@ -69,7 +67,7 @@ if __name__ == "__main__":
         # 应用服务程序接受上线请求才能启动任务节点服务
         if data["success"]:
             app.config["TASK_NODE"] = node
-            app.run(port=9001, debug=True)
+            app.run(port=int(NODE["PORT"]), debug=bool(NODE["DEBUG"]))
         else:
             print "同名节点[%s]已启动,该节点不能启动!" % node
 

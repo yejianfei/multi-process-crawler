@@ -10,6 +10,7 @@ from requests.exceptions import ConnectionError
 from pymongo import MongoClient
 from bson.objectid import ObjectId
 from config import MONGO
+from config import SERVER
 from time import strftime
 from time import localtime
 
@@ -25,7 +26,8 @@ def reg_node():
     :return:
     """
     payload = dict(request.get_json().items() + {
-        "status": 1
+        "status": 1,
+        "addr": request.remote_addr
     }.items())
 
     # 之前未注册过的新节点,才用新增操作
@@ -100,8 +102,15 @@ def update_task(task_id):
 
 @app.route("/api/tasks/<task_type>/<task_id>", methods=["delete"])
 def delete_task(task_type, task_id):
+    """
+    处理删除任务信息的请求
+    :param task_type:
+    :param task_id:
+    :return:
+    """
     cc = db.get_collection(task_type)
 
+    # 同时删除任务采集的数据
     if cc is not None:
         cc.delete_many({"task": task_id})
 
@@ -123,6 +132,10 @@ def list_task(page=1):
 
 @app.route("/tasks/form", methods=["get"])
 def form_task():
+    """
+    处理获取创建任务表单页码的请求
+    :return:
+    """
     nodes = db.nodes.find()
     return render_template("form.html", nodes=nodes)
 
@@ -132,4 +145,4 @@ def view_task():
 
 
 if __name__ == "__main__":
-    app.run(port=9000, debug=True)
+    app.run(port=int(SERVER["PORT"]), debug=bool(SERVER["DEBUG"]))

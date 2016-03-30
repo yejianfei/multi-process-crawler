@@ -6,6 +6,14 @@ from crawler import insert_collection
 
 
 def fetch(task_id, keyword, start=1, end=5):
+    """
+    通过https://medium.com/search/posts接口获取medium的关键查询结果,并保存结果至mongodb中
+    :param task_id: 本次抓取所属的任务编号
+    :param keyword: 搜索关键子
+    :param start: 开始页数
+    :param end: 结束页数
+    :return:
+    """
     ignore = list()
 
     for i in range(1, end + 1):
@@ -38,6 +46,11 @@ def fetch(task_id, keyword, start=1, end=5):
 
 
 def fetch_post(url):
+    """
+    通过详细页面地址获取页面数据并返回结构化数据
+    :param url: 页面详细地址
+    :return: 结构化数据
+    """
     resp = get(url)
     if resp.status_code == codes.ok:
         soup = BeautifulSoup(resp.text)

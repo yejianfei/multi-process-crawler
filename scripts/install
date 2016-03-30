@@ -1,0 +1,37 @@
+#! /bin/bash
+
+# check sudo command and install
+if ! command -v sudo > /dev/null 2&1>1; then
+    apt-get install sudo -y
+fi
+
+# install deps command
+sudo apt-get update
+sudo apt-get install -y python wget git
+
+# check pip command and install
+if ! command -v pip > /dev/null 2&>1; then
+    wget https://bootstrap.pypa.io/get-pip.py
+    sudo python get-pip.py
+    rm -rf get-pip.py
+    rm -rf 1
+fi
+
+# check virtualenv command and install
+if ! command -v virtualenv > /dev/null 2&>1; then
+    pip install virtualenv
+fi
+
+if [ -d multi-process-crawler ]; then
+    rm -rf multi-process-crawler
+fi
+# clone source from git
+git clone https://github.com/yejianfei/multi-process-crawler.git
+
+# install deps
+virtualenv multi-process-crawler
+source multi-process-crawler/bin/activate
+pip install -r multi-process-crawler/requirements.txt
+
+# exit virtualenv env
+deactivate
