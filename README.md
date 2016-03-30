@@ -112,8 +112,17 @@
 
 安装脚本用于执行curl命令获取源码及安装依赖环境等操作，目前部署脚步只支持Ubuntu Linux及Mac OSX发行版。
 	
-	d
+	bash <(curl -s https://raw.githubusercontent.com/yejianfei/multi-process-crawler/master/scripts/install)
+
+运行任务主服务脚本：
 	
+	chmod 755 scripts/run-server
+	scripts/run-server
+
+运行采集节点服务脚本：
+	
+	chmod 755 scripts/run-node
+	scripts/run-node
 
 ### 容器化部署
 
