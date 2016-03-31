@@ -20,29 +20,42 @@ if [ "$(uname)" == "Darwin" ]; then
     brew install wget
 fi
 
-# check pip command and install
-if ! command -v pip > /dev/null 2&>1; then
-    wget https://bootstrap.pypa.io/get-pip.py
-    sudo python get-pip.py
-    rm -rf get-pip.py
-    rm -rf 1
+
+docker()
+{
+    echo "docker"
+}
+
+if [ "$1" == "--docker" ]; then
+    docker()
+else
+
+    # check pip command and install
+    if ! command -v pip > /dev/null 2&>1; then
+        wget https://bootstrap.pypa.io/get-pip.py
+        sudo python get-pip.py
+        rm -rf get-pip.py
+        rm -rf 1
+    fi
+
+    # check virtualenv command and install
+    if ! command -v virtualenv > /dev/null 2&>1; then
+        pip install virtualenv
+    fi
+
+    if [ -d multi-process-crawler ]; then
+        rm -rf multi-process-crawler
+    fi
+    # clone source from git
+    git clone https://github.com/yejianfei/multi-process-crawler.git
+
+    # install deps
+    virtualenv multi-process-crawler/env
+    source multi-process-crawler/env/bin/activate
+    pip install -r multi-process-crawler/requirements.txt
+
+    # exit virtualenv env
+    deactivate
 fi
 
-# check virtualenv command and install
-if ! command -v virtualenv > /dev/null 2&>1; then
-    pip install virtualenv
-fi
 
-if [ -d multi-process-crawler ]; then
-    rm -rf multi-process-crawler
-fi
-# clone source from git
-git clone https://github.com/yejianfei/multi-process-crawler.git
-
-# install deps
-virtualenv multi-process-crawler/env
-source multi-process-crawler/env/bin/activate
-pip install -r multi-process-crawler/requirements.txt
-
-# exit virtualenv env
-deactivate
