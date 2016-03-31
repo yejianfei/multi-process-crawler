@@ -1,0 +1,30 @@
+#!/bin/bash
+
+set CURRENT_PATH=$(pwd)
+
+cd /opt/multi-process-crawler
+cp /opt/multi-process-crawler/requirements.txt /opt/multi-process-crawler/requirements.txt.bak
+
+git pull
+
+if [ ! diff -q /opt/multi-process-crawler/requirements.txt /opt/multi-process-crawler/requirements.txt.bak ]; then
+    pip install --upgrade pip
+    pip install -r /opt/multi-process-crawler/requirements.txt
+fi
+
+if [ ! -f /etc/gun.conf ]; then
+    echo "
+import os\n\
+
+bind = \"0.0.0.0:9000\"\n\
+workers = 4\n\
+backlog = 2048\n\
+worker_class = \"gevent\"\n\
+debug = True\n\
+proc_name = \"gunicorn.pid\"\n\
+pidfile = \"/var/run/gunicorn.pid\"\n\
+loglevel = \"debug\"\
+" > /etc/gun.conf
+fi
+
+gunicorn --daemon -c /etc/gun.conf server:app
