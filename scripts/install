@@ -1,35 +1,55 @@
 #! /bin/bash
 
+usage()
+{
+    echo "Usage: `basename $0` [-qv] [-l LOGFILE] -d DEVICE input_file [input_file2...]"
+    exit 1
+}
 
-# ubuntu server
-if [ -f /etc/debian_version ]; then
-
-    # check sudo command and install
-    if ! command -v sudo > /dev/null 2&1>1; then
-        apt-get install sudo -y
-    fi
-
-    # install deps command
-    sudo apt-get update
-    sudo apt-get install -y python wget git
-fi
-
-# mac osx
-if [ "$(uname)" == "Darwin" ]; then
-    /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
-    brew install wget
-fi
+while getopts m:d:p OPTION
+do
+    case $OPTION in
+        m)
+            MODE_TYPE=$OPTARG
+            ;;
+        d)
+            DATA_PATH=$OPTARG
+            ;;
+        p)
+            PORT_OPEN=y
+            ;;
+        \?)
+            usage
+            ;;
+    esac
+done
 
 
 docker()
 {
-    echo "docker"
+    if ! command -v docker > /dev/null 2&>1; then
+        echo "docker not install,please install docker first!"
+    fi
+
+    DOCKER_CMD="docker run -d"
+    if [ "$PORT_OPEN" == y ]; then
+        DOCKER_CMD="${DOCKER_CMD} -p 27017:27017"
+    fi
+
+    if [ ! -z "$DATA_PATH" ]; then
+        DOCKER_CMD="${DOCKER_CMD} -v ${DATA_PATH}:/data/db"
+    fi
+
+    $DOCKER_CMD = "${DOCKER_CMD} --name mongo mongo:3.2.4"
+
+    eval $DOCKER_CMD
+    # docker pull mongo:3.2.4
+    # docker run -d -p 27017:27017 --name mongo mongo:3.2.4
+
 }
 
-if [ "$1" == "--docker" ]; then
-    docker()
-else
-
+other()
+{
     # check pip command and install
     if ! command -v pip > /dev/null 2&>1; then
         wget https://bootstrap.pypa.io/get-pip.py
@@ -56,6 +76,31 @@ else
 
     # exit virtualenv env
     deactivate
+}
+
+
+if [ "$MODE_TYPE" == "docker" ]; then
+    docker
+else
+    # ubuntu server
+    if [ -f /etc/debian_version ]; then
+
+        # check sudo command and install
+        if ! command -v sudo > /dev/null 2&1>1; then
+            apt-get install sudo -y
+        fi
+
+        # install deps command
+        sudo apt-get update
+        sudo apt-get install -y python wget git
+    fi
+
+    # mac osx
+    if [ "$(uname)" == "Darwin" ]; then
+        /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
+        brew install wget
+    fi
+    echo "other"
 fi
 
 

@@ -126,8 +126,32 @@
 
 ### 容器化部署
 
->***开发中***
+#### 手动部署
 
+请确认运行环境已安装部署好了docker环境。首先使用docker获取mongodb镜像：
+	
+	docker pull mongo:3.2.4
+
+首先部署mongo的容器服务：
+	
+	docker run -d -p 27017:27017 --name mongo mongo:3.2.4
+
+如果不需要绑定外部端口可以去掉`-p 27017:27017`参数，如果需要外包存储数据可以使用 `-v /my/own/datadir:/data/db`参数，具体使用说明可参考 [hub.docker.com](https://hub.docker.com/_/mongo/)；
+
+然后获取工程的Dockerfile文件，创建服务本地镜像：
+	
+	wget https://raw.githubusercontent.com/yejianfei/multi-process-crawler/master/docker/Dockerfile
+	docker build -t multi-process-crawler:latest .
+
+最后创建服务容器并关联mongo容器：
+
+	docker run -d -p 9000:9000 -p 9001:9001 --name multi-process-crawler --link mongo:mongo multi-process-crawler:latest 
+
+现在可以使用浏览器访问`http://yourip:9000/tasks`地址，进入任务列表页面了。
+
+#### 自动部署
+
+>***脚本开发中***
 
 ## 未来改进
 
