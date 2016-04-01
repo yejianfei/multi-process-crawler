@@ -1,6 +1,6 @@
 # This is a comment
 from ubuntu:15.04
-maintainer yejianfei <yejianfei@t1-network.com>
+maintainer yejianfei <yejianfei.billy@gmail.com>
 
 run mv /etc/apt/sources.list /etc/apt/sources.list.org && echo "\
 deb http://mirrors.aliyun.com/ubuntu/ vivid main restricted universe multiverse\n\
