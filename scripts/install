@@ -25,12 +25,8 @@ do
 done
 
 
-docker()
+docker_mode()
 {
-    if ! command -v docker > /dev/null 2&>1; then
-        echo "docker not install,please install docker first!"
-    fi
-
     DOCKER_CMD="docker run -d"
     if [ "$PORT_OPEN" == y ]; then
         DOCKER_CMD="${DOCKER_CMD} -p 27017:27017"
@@ -40,11 +36,31 @@ docker()
         DOCKER_CMD="${DOCKER_CMD} -v ${DATA_PATH}:/data/db"
     fi
 
-    $DOCKER_CMD = "${DOCKER_CMD} --name mongo mongo:3.2.4"
+    DOCKER_CMD="${DOCKER_CMD} --name mongo mongo:3.2.4"
 
-    eval $DOCKER_CMD
-    # docker pull mongo:3.2.4
-    # docker run -d -p 27017:27017 --name mongo mongo:3.2.4
+    if [ -z $(docker images -q mongo:3.2.4) ];then
+        docker pull mongo:3.2.4
+    fi
+
+    if [ -z $(docker ps -a -q -f "name=mongo") ]; then
+        eval $DOCKER_CMD
+    fi
+
+    if [ -z $(docker ps -q -f "name=mongo") ]; then
+        docker start mongo
+    fi
+
+    if [ -z $(docker images -q  multi-process-crawler:latest) ]; then
+        wget https://raw.githubusercontent.com/yejianfei/multi-process-crawler/master/docker/Dockerfile
+        docker build -t multi-process-crawler:latest .
+        rm -rf Dockerfile
+    fi
+
+    if [ -z $(docker ps -a -q -f "name=multi-process-crawler") ]; then
+        docker run -d -p 9000:9000 -p 9001:9001 --name multi-process-crawler --link mongo:mongo multi-process-crawler:latest
+    elif [ -z $(docker ps -q -f "name=multi-process-crawler") ]; then
+        docker start multi-process-crawler
+    fi
 
 }
 
@@ -80,7 +96,7 @@ other()
 
 
 if [ "$MODE_TYPE" == "docker" ]; then
-    docker
+    docker_mode
 else
     # ubuntu server
     if [ -f /etc/debian_version ]; then
@@ -102,5 +118,3 @@ else
     fi
     other
 fi
-
-
