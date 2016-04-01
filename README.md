@@ -110,7 +110,7 @@
 
 ### 安装脚本
 
-安装脚本用于执行curl命令获取源码及安装依赖环境等操作，目前部署脚步只支持Ubuntu Linux及Mac OSX发行版。
+安装脚本用于执行curl命令获取源码及安装依赖环境等操作，目前部署脚本只支持Ubuntu Linux及Mac OSX发行版。
 	
 	bash <(curl -s https://raw.githubusercontent.com/yejianfei/multi-process-crawler/master/scripts/install)
 
@@ -136,7 +136,7 @@
 	
 	docker run -d -p 27017:27017 --name mongo mongo:3.2.4
 
-如果不需要绑定外部端口可以去掉`-p 27017:27017`参数，如果需要外包存储数据可以使用 `-v /my/own/datadir:/data/db`参数，具体使用说明可参考 [hub.docker.com](https://hub.docker.com/_/mongo/)；
+如果不需要绑定外部端口可以去掉`-p 27017:27017`参数，如果需要外部存储数据可以使用 `-v /my/own/datadir:/data/db`参数，具体使用说明可参考 [hub.docker.com](https://hub.docker.com/_/mongo/)；
 
 然后获取工程的Dockerfile文件，创建服务本地镜像：
 	
@@ -151,7 +151,12 @@
 
 #### 自动部署
 
->***脚本开发中***
+该脚本会自动下载mongo镜像及下载该项目的Dockfile进行构建本地镜像，最后安装mongo容器及应用容器，首先获取安装脚本文件：
+
+	wget https://raw.githubusercontent.com/yejianfei/multi-process-crawler/master/scripts/install
+
+参数说明：
+	
 
 ## 未来改进
 
