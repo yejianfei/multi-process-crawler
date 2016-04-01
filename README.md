@@ -45,6 +45,8 @@
 1. 任务管理主服务；
 2. 采集节点服务；
 
+![image](https://raw.githubusercontent.com/yejianfei/multi-process-crawler/master/docs/images/mpc-framework.png)
+
 根据实际业务需要，可以部署多个任务管理主服务及多个采集节点服务，只是选择不同的启动器就可以实现不同服务的切换。具体实现流出如下：
 
 1. 采集节点服务通过请求任务管理主服务注册自己并告知任务管理服务自己主机地址、端口、名称等信息；任务管理主服务会存储或更新该采集节点的信息；
@@ -156,7 +158,12 @@
 	wget https://raw.githubusercontent.com/yejianfei/multi-process-crawler/master/scripts/install
 
 参数说明：
-	
+
+`-m docker` 启用docker容器的安装模式；
+
+`-d /some_path` 宿主机存储数据文件的路径；
+
+`-p` 开启mongo db的27017端口用于，外部可以连接数据库；
 
 ## 未来改进
 
